@@ -7,6 +7,7 @@ Your project's description...
 
 ## Documentation
 
+
 Before using the aem-boilerplate, we recommend you to go through the documentation on [www.aem.live](https://www.aem.live/docs/), more specifically:
 1. [AEM Authoring](https://www.aem.live/docs/aem-authoring)
 2. [Universal Editor Tutorial](https://www.aem.live/developer/ue-tutorial)
