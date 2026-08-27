@@ -13,16 +13,23 @@
 }
 
 .bad-perf .bad-perf-cls-box {
-  height: 250px;
+  height: 50px;
   background-color: #dc3545;
   color: #ffffff;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
   justify-content: center;
-  margin-bottom: 20px;
+  gap: 8px;
+  margin-bottom: 10px;
   border-radius: 6px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.bad-perf .bad-perf-cls-box h3,
+.bad-perf .bad-perf-cls-box p {
+  margin: 0;
+  font-size: 14px;
 }
 
 .bad-perf .bad-perf-lcp-image {
@@ -32,4 +39,3 @@
   display: block;
   margin: 20px auto 0;
 }
-
