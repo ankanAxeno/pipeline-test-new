@@ -1,0 +1,114 @@
+name: Lighthouse CI
+
+on:
+  push:
+  pull_request:
+    types: [opened, synchronize, reopened, edited]
+  workflow_dispatch:
+    inputs:
+      test_path:
+        description: 'URL Path to audit (e.g., /component-testing/carousel or /)'
+        required: false
+        type: string
+        default: '/'
+
+jobs:
+  lighthouse:
+    name: Lighthouse Audit (${{ matrix.device }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        device: [desktop, mobile]
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Compute AEM Preview URL
+        id: aem-url
+        env:
+          PR_BODY: ${{ github.event.pull_request.body }}
+          INPUT_PATH: ${{ inputs.test_path }}
+        run: |
+          RAW_REF="${{ github.head_ref || github.ref_name }}"
+          # In AEM EDS, slashes '/' and underscores '_' in branch names are sanitized to '-'
+          SANITIZED_BRANCH=$(echo "$RAW_REF" | sed 's/[/_]/-/g')
+          BASE_URL="https://${SANITIZED_BRANCH}--pipeline-test-new--ankanaxeno.aem.page"
+          
+          TEST_PATH="/"
+
+          # 1. If manually triggered via GitHub Actions UI
+          if [ -n "$INPUT_PATH" ]; then
+            echo "Using manual input path from UI: $INPUT_PATH"
+            TEST_PATH="$INPUT_PATH"
+
+          # 2. If triggered by Pull Request, extract "- After: <url>" from PR template
+          elif [ -n "$PR_BODY" ]; then
+            echo "Extracting test URL from PR body..."
+            AFTER_LINE=$(echo "$PR_BODY" | grep -iE '^[[:space:]]*-[[:space:]]*After:' | head -n 1 || true)
+
+            if [ -n "$AFTER_LINE" ]; then
+              AFTER_URL=$(echo "$AFTER_LINE" | sed -E 's/^[[:space:]]*-[[:space:]]*After:[[:space:]]*//' | awk '{print $1}' | tr -d '\r')
+              echo "Found After URL: $AFTER_URL"
+
+              # Extract path component (everything after the domain)
+              EXTRACTED_PATH=$(echo "$AFTER_URL" | sed -E 's|^https?://[^/]+||')
+              if [ -n "$EXTRACTED_PATH" ]; then
+                TEST_PATH="$EXTRACTED_PATH"
+              fi
+            fi
+          fi
+
+          # Ensure path starts with '/'
+          [[ "$TEST_PATH" != /* ]] && TEST_PATH="/$TEST_PATH"
+
+          TARGET_URL="${BASE_URL}${TEST_PATH}"
+          echo "url=$TARGET_URL" >> $GITHUB_OUTPUT
+          echo "Final Target URL for Lighthouse: $TARGET_URL"
+
+      - name: Wait for AEM Code Sync
+        run: |
+          echo "Waiting 25s for initial AEM Code Sync..."
+          sleep 25
+
+          URL="${{ steps.aem-url.outputs.url }}"
+          MAX_RETRIES=10
+          SLEEP_INTERVAL=10
+
+          echo "Checking readiness for $URL..."
+          for ((i=1; i<=MAX_RETRIES; i++)); do
+            HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" -L "$URL" || true)
+            echo "Attempt $i of $MAX_RETRIES: HTTP status is $HTTP_CODE"
+
+            if [ "$HTTP_CODE" -ge 200 ] && [ "$HTTP_CODE" -lt 400 ]; then
+              echo "Site is reachable and ready for Lighthouse CI!"
+              exit 0
+            fi
+
+            sleep $SLEEP_INTERVAL
+          done
+
+          echo "Error: Timed out waiting for AEM Code Sync on $URL"
+          exit 1
+
+      - name: Run Lighthouse CI (Desktop)
+        if: matrix.device == 'desktop'
+        uses: treosh/lighthouse-ci-action@v12
+        env:
+          LHCI_COLLECT__SETTINGS__PRESET: desktop
+        with:
+          urls: |
+            ${{ steps.aem-url.outputs.url }}
+          configPath: './lighthouserc.json'
+          uploadArtifacts: true
+          temporaryPublicStorage: true
+
+      - name: Run Lighthouse CI (Mobile)
+        if: matrix.device == 'mobile'
+        uses: treosh/lighthouse-ci-action@v12
+        with:
+          urls: |
+            ${{ steps.aem-url.outputs.url }}
+          configPath: './lighthouserc.json'
+          uploadArtifacts: true
+          temporaryPublicStorage: true
