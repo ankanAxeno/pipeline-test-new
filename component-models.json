@@ -142,6 +142,17 @@
     ]
   },
   {
+    "id": "bad-perf",
+    "fields": [
+      {
+        "component": "text",
+        "name": "title",
+        "label": "Title",
+        "valueType": "string"
+      }
+    ]
+  },
+  {
     "id": "card",
     "fields": [
       {
