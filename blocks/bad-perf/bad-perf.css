@@ -1,0 +1,35 @@
+.bad-perf {
+  padding: 24px;
+  background-color: #fff3cd;
+  border: 2px solid #ffeba2;
+  margin: 20px 0;
+  text-align: center;
+  border-radius: 8px;
+}
+
+.bad-perf .bad-perf-content h2 {
+  margin-top: 0;
+  color: #856404;
+}
+
+.bad-perf .bad-perf-cls-box {
+  height: 500px;
+  background-color: #dc3545;
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.bad-perf .bad-perf-lcp-image {
+  width: 100%;
+  height: auto;
+  max-width: 1200px;
+  display: block;
+  margin: 20px auto 0;
+}
+
