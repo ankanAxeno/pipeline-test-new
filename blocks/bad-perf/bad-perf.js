@@ -1,12 +1,11 @@
 /**
- * Block calibrated to target a Lighthouse / PSI score of ~85 (between 80 and 88).
- * Slightly exceeds thresholds to fail LHCI 90% target cleanly.
+ * Block calibrated to lower Lighthouse / PSI score from ~94 down to ~85 (80-88 range).
  * @param {Element} block The bad-perf block element
  */
 export default async function decorate(block) {
-  // 1. Moderate TBT (~280ms): Mild main-thread block to land PSI score around 85
+  // 1. TBT (~350ms measured): Main thread sync block for 550ms during decoration
   const start = Date.now();
-  while (Date.now() - start < 280) {
+  while (Date.now() - start < 550) {
     Math.sin(Math.random());
   }
 
@@ -14,11 +13,11 @@ export default async function decorate(block) {
   block.innerHTML = `
     <div class="bad-perf-content">
       <h2>Performance Testing Block</h2>
-      <p>Simulating mild performance degradation (Target PSI: ~85)...</p>
+      <p>Simulating moderate performance degradation (Target PSI: ~85)...</p>
     </div>
   `;
 
-  // 2. Controlled CLS (~0.12): Inject shift element after 1.5s
+  // 2. Controlled CLS (~0.15): Inject 120px element at 800ms
   setTimeout(() => {
     const shiftBox = document.createElement('div');
     shiftBox.className = 'bad-perf-cls-box';
@@ -27,14 +26,14 @@ export default async function decorate(block) {
       <p>Unexpected element injected dynamically.</p>
     `;
     block.prepend(shiftBox);
-  }, 1500);
+  }, 800);
 
-  // 3. Moderate LCP (~2.7s): Delay image load slightly past 2.5s threshold
+  // 3. LCP (~2.8s): Inject heavy image at 1200ms within primary audit window
   setTimeout(() => {
     const lcpImage = document.createElement('img');
     lcpImage.className = 'bad-perf-lcp-image';
-    lcpImage.src = 'https://images.unsplash.com/photo-1579783902614-a3fb3927b675?w=1200&q=80';
-    lcpImage.alt = 'Mildly Delayed LCP Image';
+    lcpImage.src = 'https://images.unsplash.com/photo-1579783902614-a3fb3927b675?w=2400&q=90';
+    lcpImage.alt = 'Delayed Heavy LCP Image';
     block.appendChild(lcpImage);
-  }, 2600);
+  }, 1200);
 }

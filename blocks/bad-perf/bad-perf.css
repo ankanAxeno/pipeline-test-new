@@ -13,15 +13,15 @@
 }
 
 .bad-perf .bad-perf-cls-box {
-  height: 50px;
+  height: 120px;
   background-color: #dc3545;
   color: #ffffff;
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  margin-bottom: 10px;
+  gap: 4px;
+  margin-bottom: 15px;
   border-radius: 6px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
 }
