@@ -38,4 +38,3 @@ export default async function decorate(block) {
     block.appendChild(lcpImage);
   }, 3500);
 }
-
