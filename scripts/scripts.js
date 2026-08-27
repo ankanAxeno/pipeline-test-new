@@ -147,6 +147,21 @@ async function loadEager(doc) {
 }
 
 /**
+ * Initializes AEM Sidekick custom plugin event listener for Sanity.
+ */
+function initSanity() {
+  const sidekick = document.querySelector('aem-sidekick');
+  if (!sidekick) {
+    document.addEventListener('sidekick-ready', initSanity, { once: true });
+    return;
+  }
+  sidekick.addEventListener('custom:sanity', async (event) => {
+    const { mount } = await import('../tools/sanity/index.js');
+    mount(event.detail);
+  });
+}
+
+/**
  * Loads everything that doesn't need to be delayed.
  * @param {Element} doc The container element
  */
@@ -164,6 +179,7 @@ async function loadLazy(doc) {
 
   loadCSS(`${window.hlx.codeBasePath}/styles/lazy-styles.css`);
   loadFonts();
+  initSanity();
 }
 
 /**
