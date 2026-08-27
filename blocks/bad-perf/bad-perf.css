@@ -13,7 +13,7 @@
 }
 
 .bad-perf .bad-perf-cls-box {
-  height: 500px;
+  height: 250px;
   background-color: #dc3545;
   color: #ffffff;
   display: flex;
