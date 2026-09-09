@@ -1,0 +1,27 @@
+.video {
+  position: relative;
+  width: 100%;
+  margin: 24px 0;
+  background-color: #000;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.video video {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  object-fit: contain;
+  background-color: #000;
+}
+
+.video[data-video-empty="true"] {
+  display: none;
+}
+
+@media (width >= 900px) {
+  .video {
+    margin: 32px 0;
+  }
+}

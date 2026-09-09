@@ -1,0 +1,73 @@
+{
+  "definitions": [
+    {
+      "title": "Video",
+      "id": "video",
+      "plugins": {
+        "xwalk": {
+          "page": {
+            "resourceType": "core/franklin/components/block/v1/block",
+            "template": {
+              "name": "Video",
+              "model": "video"
+            }
+          }
+        }
+      }
+    }
+  ],
+  "models": [
+    {
+      "id": "video",
+      "fields": [
+        {
+          "component": "reference",
+          "valueType": "string",
+          "name": "video",
+          "label": "Video",
+          "description": "Select an approved video from AEM Assets. Only approved assets can be published and will play on the live site.",
+          "multi": false
+        },
+        {
+          "component": "reference",
+          "valueType": "string",
+          "name": "poster",
+          "label": "Poster Image",
+          "description": "Optional preview image shown before the video plays.",
+          "multi": false
+        },
+        {
+          "component": "text",
+          "valueType": "string",
+          "name": "videoTitle",
+          "label": "Title",
+          "description": "Accessible title / caption for the video."
+        },
+        {
+          "component": "multiselect",
+          "name": "classes",
+          "label": "Options",
+          "options": [
+            {
+              "name": "Autoplay",
+              "value": "autoplay"
+            },
+            {
+              "name": "Loop",
+              "value": "loop"
+            },
+            {
+              "name": "Muted",
+              "value": "muted"
+            },
+            {
+              "name": "Hide controls",
+              "value": "no-controls"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "filters": []
+}
