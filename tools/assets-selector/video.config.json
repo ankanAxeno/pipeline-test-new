@@ -1,0 +1,42 @@
+{
+  "aemTierType": ["delivery", "author"],
+  "rootPath": "/content/dam",
+  "filterSchema": [
+    {
+      "groupKey": "FileTypeGroup",
+      "header": "File Type",
+      "fields": [
+        {
+          "element": "checkbox",
+          "name": "type",
+          "defaultValue": ["video/*"],
+          "options": [
+            {
+              "label": "Video",
+              "value": "video/*",
+              "readOnly": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "groupKey": "StatusGroup",
+      "header": "Approval Status",
+      "fields": [
+        {
+          "element": "radiogroup",
+          "name": "property",
+          "defaultValue": ["dam:assetStatus==approved"],
+          "readOnly": true,
+          "options": [
+            {
+              "label": "Approved",
+              "value": "dam:assetStatus==approved"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

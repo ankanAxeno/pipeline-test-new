@@ -21,12 +21,18 @@
       "id": "video",
       "fields": [
         {
-          "component": "reference",
+          "component": "custom-asset-namespace:custom-asset",
           "valueType": "string",
           "name": "video",
           "label": "Video",
-          "description": "Select an approved video from AEM Assets. Only approved assets can be published and will play on the live site.",
+          "description": "Select an approved video from AEM Assets. The picker only lists approved video assets.",
+          "configUrl": "https://main--pipeline-test-new--ankanaxeno.aem.page/tools/assets-selector/video.config.json",
           "multi": false
+        },
+        {
+          "component": "custom-asset-namespace:custom-asset-mimetype",
+          "valueType": "string",
+          "name": "videoMimeType"
         },
         {
           "component": "reference",

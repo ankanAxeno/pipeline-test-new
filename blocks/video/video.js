@@ -13,20 +13,31 @@
 const VIDEO_EXTENSIONS = ['.mp4', '.webm', '.ogg', '.ogv', '.mov', '.m4v'];
 
 /**
- * Dynamic Media (Scene7) delivery configuration.
+ * Delivery of the authored video.
  *
- * Videos authored via the AEM asset picker arrive as raw DAM paths
- * (e.g. /content/dam/.../my_video.mp4). The Edge Delivery host does not serve
- * DAM binaries at that path, so the raw reference 404s. The same asset is
- * delivered by Dynamic Media as:
- *   https://<DM_HOST>/is/content/<DM_COMPANY>/<asset-name>
- * (matching how images on this site resolve to s7d1.scene7.com/is/image/...).
+ * Primary path: the video is authored with the Configurable Asset Picker
+ * (see blocks/video/_video.json + tools/assets-selector/video.config.json),
+ * which writes a companion MIME type and makes the backend emit an absolute
+ * Dynamic Media / Media Bus delivery URL. Such absolute URLs are used as-is.
+ *
+ * Legacy fallback: if a video is instead delivered as a raw DAM path
+ * (/content/dam/.../my_video.mp4) — which the Edge Delivery host does not serve
+ * and would 404 — it is rewritten to the Dynamic Media content endpoint. This
+ * fallback is environment-specific; once every video is authored via the picker
+ * it can be removed. See docs/video-asset-delivery-setup.md.
  */
 const DM_HOST = 's7d1.scene7.com';
 const DM_COMPANY = 'SolutionPartnerSandbox';
 
+function isAbsoluteUrl(url) {
+  return /^https?:\/\//i.test(url);
+}
+
 function isVideoUrl(url) {
   if (!url) return false;
+  // Absolute delivery URLs (Dynamic Media / Media Bus) may carry no file
+  // extension — trust them; the picker filter guarantees a video was selected.
+  if (isAbsoluteUrl(url)) return true;
   try {
     const { pathname } = new URL(url, window.location.href);
     return VIDEO_EXTENSIONS.some((ext) => pathname.toLowerCase().endsWith(ext));
@@ -37,16 +48,16 @@ function isVideoUrl(url) {
 
 /**
  * Resolves an authored video reference to a playable URL.
- * Raw DAM paths are rewritten to the Dynamic Media delivery URL; absolute
- * URLs (external hosts or already-Dynamic-Media links) are returned as-is.
+ * Absolute URLs (Dynamic Media / Media Bus / external) are returned as-is.
+ * Raw DAM paths are rewritten to the Dynamic Media delivery URL as a fallback.
  * @param {string} url the authored reference
  * @returns {string} a playable video URL
  */
 function resolveVideoSrc(url) {
   if (!url) return '';
-  // Already an absolute URL (external, or already a Dynamic Media link) — leave it.
-  if (/^https?:\/\//i.test(url)) return url;
-  // Raw DAM path: rewrite to Dynamic Media delivery using the asset's base name.
+  // Already an absolute URL (backend-provided delivery URL, or external) — leave it.
+  if (isAbsoluteUrl(url)) return url;
+  // Legacy fallback — raw DAM path: rewrite to Dynamic Media delivery.
   if (url.startsWith('/content/dam/')) {
     const fileName = url.split('/').pop().split('?')[0];
     const assetName = fileName.replace(/\.[^.]+$/, '');
