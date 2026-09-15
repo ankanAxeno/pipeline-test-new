@@ -1,0 +1,29 @@
+{
+  "aemTierType": ["delivery", "author"],
+  "rootPath": "/content/dam/jsw-motors-eds",
+  "filterSchema": [
+    {
+      "groupKey": "FileTypeGroup",
+      "header": "File Type",
+      "fields": [
+        {
+          "element": "checkbox",
+          "name": "type",
+          "defaultValue": ["image/jpeg", "image/png"],
+          "options": [
+            {
+              "label": "JPEG",
+              "value": "image/jpeg",
+              "readOnly": true
+            },
+            {
+              "label": "PNG",
+              "value": "image/png",
+              "readOnly": true
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
